@@ -53,7 +53,7 @@ Prompts:
   Southbound: |+
     ---Southbound---
     
-    <UserOutput>:
+    UserOutput:
       <Use this attribute to speak to the user, if you have nothing to say simply use "None">
     
     {southbound_format}
@@ -66,4 +66,3 @@ Prompts:
   Note: |+
     
     {format_note}
-    - Attribute Names must be a valid Python variable name

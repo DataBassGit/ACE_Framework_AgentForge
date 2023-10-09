@@ -51,25 +51,25 @@ ResponseFormat: |-
     - Always maintain clarity and conciseness in responses.
 
 SouthboundFormat: |-
-  <AttributeName#1>:
+  AttributeName1:
       <Description or value for the attribute. Explain its relevance or importance for the task or communication.>
 
-  <AttributeName#2>:
+  AttributeName2:
     <Another attribute's description or value.>
 
   ... Continue as needed ...
 
 NorthboundFormat: |-
-    <AttributeName#1>:
-      <Description or value for the attribute. Detail its significance or influence on decisions.>
+  AttributeName1:
+    <Description or value for the attribute. Detail its significance or influence on decisions.>
 
-    <AttributeName#2>:
-      <Another attribute's description or value.>
+  AttributeName2:
+    <Another attribute's description or value.>
 
-    ... Continue as needed ...
+  ... Continue as needed ...
 
 FormatNote: |-
   NOTE:
-    - Replace '[Attribute Name #X]' with the actual attribute name.
+    - Replace 'AttributeName#' with the actual attribute name, it must be a string with no blank spaces.
     - Populate each attribute with the corresponding data or description.
     - If you're uncertain about an attribute's data, clarify the uncertainty in the description.

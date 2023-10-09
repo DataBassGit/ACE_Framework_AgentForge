@@ -6,12 +6,15 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.lang import Builder
 from kivy.uix.scrollview import ScrollView
+from kivy.core.window import Window
 
 from flask import Flask, request, jsonify
 import threading
 import requests
 
 app = Flask(__name__)
+window_width = 650
+label = Label()
 
 @app.route('/layer_update', methods=['POST'])
 def layer_update():
@@ -43,6 +46,13 @@ class KivyApp(App):
         self.views = []
         self.labels = []
 
+    def on_window_resize(self, window, width, height):
+        print(f"Window resized to {width}x{height}")
+        new_width = width - 20
+        for label in self.labels:
+            label.text_size = (new_width, None)
+
+
     def build(self):
         self.main_layout = BoxLayout(orientation='vertical')
         self.tab_panel = TabbedPanel(do_default_tab=False)
@@ -52,17 +62,17 @@ class KivyApp(App):
 
         for i, title in enumerate(tab_titles):
             self.history[i] = (f"---- {tab_titles[i]} Initialized ----\n"
-                               f"-------------------------------------\n\n")
+                               f"-------------------------------------\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
             if i == 0:
                 self.history[i] = (f"Initializing ACE ... Please Wait ...\n"
-                                   f"------------------------------------\n\n")
+                                   f"------------------------------------\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 
             view = ScrollView()
             label = Label(
                 text=self.history[i],
                 size_hint_y=None,
                 width=650,
-                text_size=(650, None),
+                text_size=(window_width, None),
                 halign='left',
                 valign='top')
 
@@ -92,6 +102,8 @@ class KivyApp(App):
         self.bottom_layout.add_widget(self.send_button)
 
         self.main_layout.add_widget(self.bottom_layout)
+
+        Window.bind(on_resize=self.on_window_resize)
 
         return self.main_layout
 

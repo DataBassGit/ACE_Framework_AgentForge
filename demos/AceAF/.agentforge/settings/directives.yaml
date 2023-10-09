@@ -49,6 +49,8 @@ ResponseFormat: |-
     - Choose attributes that best convey the message. Only include relevant attributes.
     - If an attribute doesn't fit the current scenario, omit it.
     - Always maintain clarity and conciseness in responses.
+  
+  FORMAT RESPONSE:
 
 SouthboundFormat: |-
   AttributeName1:

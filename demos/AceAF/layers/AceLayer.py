@@ -31,11 +31,11 @@ class AceLayer:
 
         self.bus = {'NorthBus': None, 'SouthBus': None}
         self.my_messages = {'NorthBus': None, 'SouthBus': None}
+        self.parsed_result = {'Northbound': None, 'Southbound': None}
         self.top_layer_message = None
         self.bottom_layer_message = None
 
         self.result = None
-        self.parsed_result = None
         self.agent = None
         self.event = None
         self.event_type = None  # variable to store the type of event
@@ -153,19 +153,18 @@ class AceLayer:
         print(f"\n\nResult:\n{self.result}\n\n")
 
     def parse_results(self):
-        match = re.search(r'```yaml\n(.*?)\n```', self.result.__str__(), re.DOTALL)
+        yaml_content = self.result.__str__()
+        match = re.search(r'```yaml\n(.*?)\n```', yaml_content, re.DOTALL)
         if match:
             yaml_content = match.group(1)
-            # Parse YAML
-            self.parsed_result = yaml.safe_load(yaml_content)
-            self.my_messages['NorthBus'] = pretty_print_yaml(self.parsed_result['Northbound'])
-            self.my_messages['SouthBus'] = pretty_print_yaml(self.parsed_result['Southbound'])
 
-            print(f"\n\nNorthBus:\n{self.my_messages['NorthBus']}")
-            print(f"\n\nSouthBus:\n{self.my_messages['SouthBus']}")
+        # Parse YAML
+        self.parsed_result = yaml.safe_load(yaml_content)
+        self.my_messages['NorthBus'] = pretty_print_yaml(self.parsed_result['Northbound'])
+        self.my_messages['SouthBus'] = pretty_print_yaml(self.parsed_result['Southbound'])
 
-        else:
-            print("No YAML content found!")
+        print(f"\n\nNorthBus:\n{self.my_messages['NorthBus']}")
+        print(f"\n\nSouthBus:\n{self.my_messages['SouthBus']}")
 
     def update_bus(self, **kwargs):
 

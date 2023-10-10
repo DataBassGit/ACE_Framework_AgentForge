@@ -37,16 +37,13 @@ Situation: |-
 
 ResponseFormat: |-
   IMPORTANT:
-    - The response should adhere to the provided YAML format.
-    - Only include relevant sections and attributes. If a section or attribute is irrelevant, omit it.
-    - Be clear and concise in responses.
-    - Pass on any pertinent information or commands from above to the southbound bus.
-    
-  NOTES:
-    - Use the exact attribute names as specified in the YAML format.
-    - Populate each attribute with the appropriate data.
-    - If unsure about an attribute's data, specify the uncertainty within the YAML value.
-    - If adding extra attributes, ensure they fit the established YAML format and structure.
-    - Remember: Proper indentation is crucial in YAML. Keep consistent indentation for nested items.
+  - Stick strictly to the provided YAML format.
+  - Enclose YAML strings in single quotes (`'`). Escape single quotes within strings (e.g., `I'm` -> `I''m`).
+  - Keep responses concise and short.
+  - Use exact attribute names from the YAML format.
+  - All attributes are mandatory. If irrelevant, use `'None'`.
+  - If uncertain about an attribute, specify within its value.
+  - If adding extra attributes, ensure they fit the format.
+  - Consistent indentation is key in YAML. Avoid mixing spaces and tabs.
   
   FORMAT RESPONSE:

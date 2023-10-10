@@ -31,7 +31,7 @@ class AceLayer:
 
         self.bus = {'NorthBus': None, 'SouthBus': None}
         self.my_messages = {'NorthBus': None, 'SouthBus': None}
-        self.parsed_result = {'Northbound': None, 'Southbound': None}
+        self.parsed_result = None
         self.top_layer_message = None
         self.bottom_layer_message = None
 
@@ -150,7 +150,7 @@ class AceLayer:
         self.result = self.agent.run(top_message=self.top_layer_message,
                                      bottom_message=self.bottom_layer_message)
 
-        print(f"\n\nResult:\n{self.result}\n\n")
+        print(f"\n----------------\n\nResult:\n{self.result}\n----------------\n")
 
     def parse_results(self):
         yaml_content = self.result.__str__()
@@ -160,11 +160,13 @@ class AceLayer:
 
         # Parse YAML
         self.parsed_result = yaml.safe_load(yaml_content)
-        self.my_messages['NorthBus'] = pretty_print_yaml(self.parsed_result['Northbound'])
-        self.my_messages['SouthBus'] = pretty_print_yaml(self.parsed_result['Southbound'])
+        if self.parsed_result['Northbound']:
+            self.my_messages['NorthBus'] = pretty_print_yaml(self.parsed_result['Northbound'])
+        if self.parsed_result['Southbound']:
+            self.my_messages['SouthBus'] = pretty_print_yaml(self.parsed_result['Southbound'])
 
-        print(f"\n\nNorthBus:\n{self.my_messages['NorthBus']}")
-        print(f"\n\nSouthBus:\n{self.my_messages['SouthBus']}")
+        print(f"\nNorthBus:\n{self.my_messages['NorthBus']}\n")
+        print(f"\nSouthBus:\n{self.my_messages['SouthBus']}\n")
 
     def update_bus(self, **kwargs):
 

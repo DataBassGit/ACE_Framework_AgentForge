@@ -10,7 +10,7 @@ Prompts:
     5. Cognitive Control: That's you! Directs action sequences and switches.
     6. Task Prosecution: Executes tasks and provides feedback.
 
-    Communication: Use the Southbound Bus for directives to the layer below and the Northbound Bus to provide feedback to layers above.
+    Communication: Use the Southbound Bus for directives to the layer below, and the Northbound Bus to provide feedback to layers above.
 
     Instructions:
     1. Monitor action progress and switch if needed.

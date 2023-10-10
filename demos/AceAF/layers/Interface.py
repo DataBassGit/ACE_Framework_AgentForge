@@ -67,5 +67,5 @@ class Interface:
         self.output_message(0, message)
 
     def handle_south_bus(self, parsed_data):
-        message = parsed_data['UserOutput']
+        message = parsed_data['Southbound']['OutputToUser']
         self.save_chat_message(respondent="Agent", message=message)

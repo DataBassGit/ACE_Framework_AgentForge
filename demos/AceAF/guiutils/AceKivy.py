@@ -16,6 +16,7 @@ app = Flask(__name__)
 window_width = 650
 label = Label()
 
+
 @app.route('/layer_update', methods=['POST'])
 def layer_update():
     data = request.json
@@ -25,8 +26,10 @@ def layer_update():
     kivy_app.update_label(layer_number, message)
     return jsonify({"status": "received"})
 
+
 def run_flask_app():
     app.run(port=5000, use_reloader=False, threaded=True)
+
 
 class KivyApp(App):
 
@@ -52,7 +55,6 @@ class KivyApp(App):
         for label in self.labels:
             label.text_size = (new_width, None)
 
-
     def build(self):
         self.main_layout = BoxLayout(orientation='vertical')
         self.tab_panel = TabbedPanel(do_default_tab=False)
@@ -62,10 +64,10 @@ class KivyApp(App):
 
         for i, title in enumerate(tab_titles):
             self.history[i] = (f"---- {tab_titles[i]} Initialized ----\n"
-                               f"-------------------------------------\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+                               f"-------------------------------------\n\n")
             if i == 0:
                 self.history[i] = (f"Initializing ACE ... Please Wait ...\n"
-                                   f"------------------------------------\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+                                   f"------------------------------------\n\n")
 
             view = ScrollView()
             label = Label(

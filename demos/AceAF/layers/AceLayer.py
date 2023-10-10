@@ -1,8 +1,18 @@
 from . import LAYER_REGISTRY
+import re
+import yaml
 from agentforge.utils.storage_interface import StorageInterface
 import threading
 from agentforge.config import Config
 from .Interface import Interface
+
+
+def pretty_print_yaml(data):
+    formatted_str = ""
+    for key, value in data.items():
+        formatted_str += yaml.dump({key: value}, default_flow_style=False, allow_unicode=True) + "\n"
+
+    return formatted_str
 
 
 class AceLayer:
@@ -25,6 +35,7 @@ class AceLayer:
         self.bottom_layer_message = None
 
         self.result = None
+        self.parsed_result = None
         self.agent = None
         self.event = None
         self.event_type = None  # variable to store the type of event
@@ -138,26 +149,23 @@ class AceLayer:
         # Call individual Agents From Each Layer
         self.result = self.agent.run(top_message=self.top_layer_message,
                                      bottom_message=self.bottom_layer_message)
-                                     # self_message=self.my_messages['SouthBus'])
+
+        print(f"\n\nResult:\n{self.result}\n\n")
 
     def parse_results(self):
-        result = self.result.__str__()
+        match = re.search(r'```yaml\n(.*?)\n```', self.result.__str__(), re.DOTALL)
+        if match:
+            yaml_content = match.group(1)
+            # Parse YAML
+            self.parsed_result = yaml.safe_load(yaml_content)
+            self.my_messages['NorthBus'] = pretty_print_yaml(self.parsed_result['Northbound'])
+            self.my_messages['SouthBus'] = pretty_print_yaml(self.parsed_result['Southbound'])
 
-        # Splitting the string on "Northbound:" to separate the sections again
-        if "---Northbound---" in result:
-            southbound_str, northbound_str = result.split("---Northbound---")
-            northbound_str = northbound_str.strip()
+            print(f"\n\nNorthBus:\n{self.my_messages['NorthBus']}")
+            print(f"\n\nSouthBus:\n{self.my_messages['SouthBus']}")
+
         else:
-            northbound_str = None
-            southbound_str = result
-
-        southbound_str = southbound_str.replace("---Southbound---", "").strip()
-
-        self.my_messages['SouthBus'] = southbound_str
-        self.my_messages['NorthBus'] = northbound_str
-
-        print(f"SOUTH BUS MESSAGE:\n\n{self.my_messages['SouthBus']}\n\n")
-        print(f"NORTH BUS MESSAGE:\n{self.my_messages['NorthBus']}\n\n")
+            print("No YAML content found!")
 
     def update_bus(self, **kwargs):
 

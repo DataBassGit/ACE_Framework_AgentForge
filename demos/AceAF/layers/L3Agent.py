@@ -40,9 +40,3 @@ class L3Agent(AceLayer):
         print(f"\nUnfiltered Response:\n{response}\n")
 
         self.proposed_response = response
-
-    # Pull chat history last message from user
-    # send message variable to .custom_agents.modules.chat.chatbot.run()
-    # return bot response
-    # Run response through self-model
-    # send bot response down south bus

@@ -25,16 +25,23 @@ class Chatbot:
     memories = None
     chat_response = None
     message = None
+    cat = None
+    categories = None
 
     def __init__(self):
         self.chat_history = self.storage.select_collection("chat_history")
+        self.selected_action = None
+        self.reflection = None
+        self.theory = None
+        self.generate = None
+        self.thought = None
 
     def run(self, message):
         print(message)
         self.message = message
 
         # get chat history
-        history = self.gethistory(10)
+        history = self.chatman(message)
 
         # run thought agent
         self.thought_agent(message, history)
@@ -52,11 +59,14 @@ class Chatbot:
     def thought_agent(self, message, history):
         self.result = self.thou.run(user_message=message,
                                     history=history["documents"])
-        self.log(3, f"Thought Agent:\n=====\n{self.result}\n=====\n")
+        self.log(1, f"Thought Agent:\n=====\n{self.result}\n=====\n")
         self.thought = self.parse_lines()
         print(f"self.thought: {self.thought}")
-        cat = self.format_string(self.thought["Category"])
-        self.memory_recall(cat, message)
+        self.categories = self.thought["Categories"].split(",")
+        for category in self.categories:
+            formatted_category = self.format_string(category)
+            print(f"formatted_category: {formatted_category}")
+            self.memory_recall(formatted_category, message)
 
     def gen_agent(self, message, history):
         self.result = self.gen.run(user_message=message,
@@ -78,6 +88,8 @@ class Chatbot:
         print(f"self.thought: {self.theory}")
 
     def reflect_agent(self, message, history):
+        if "What" not in self.theory:
+            self.theory = {"What": "Don't Know.", "Why": "Not enough information."}
 
         self.result = self.ref.run(user_message=message,
                                    history=history["documents"],
@@ -93,26 +105,61 @@ class Chatbot:
         print(f"self.thought: {self.reflection}")
 
         if self.reflection["Choice"] == "Respond":
+            self.save_memory(self.chat_response)
             return self.chat_response
         elif self.reflection["Choice"] == "Nothing":
             return "No Response Provided"
         else:
-            new_response = self.gen.run(user_message=message, history=history["documents"], memories=self.memories,
-                                        emotion=self.thought["Emotion"], reason=self.thought["Reason"],
-                                        thought=self.thought["Inner Thought"], what=self.theory["What"],
-                                        why=self.theory["Why"], feedback=self.reflection["Reason"],
+            new_response = self.gen.run(user_message=message,
+                                        history=history["documents"],
+                                        memories=self.memories,
+                                        emotion=self.thought["Emotion"],
+                                        reason=self.thought["Reason"],
+                                        thought=self.thought["Inner Thought"],
+                                        what=self.theory["What"],
+                                        why=self.theory["Why"],
+                                        feedback=self.reflection["Reason"],
                                         response=self.chat_response)
+            self.save_memory(new_response)
             return new_response
 
     def save_memory(self, bot_response):
+        # Existing chat history saving logic
         size = self.storage.count_collection("chat_history")
         bot_message = f"Chatbot: {bot_response}"
+        user_chat = f"User: {self.message}"
+
+        # New logic for saving to each category collection
+        for category in self.categories:
+            formatted_category = self.format_string(category)
+
+            # Re-assign the values to params for each iteration
+            params = {
+                "collection_name": formatted_category,
+                "data": [user_chat],
+                "ids": [str(size + 1)],
+                "metadata": [{
+                    "id": size + 1,
+                    "Character Response": bot_message,
+                    "EmotionalResponse": self.thought["Emotion"],
+                    "Inner_Thought": self.thought["Inner Thought"]
+                }]
+            }
+            self.storage.save_memory(params)  # Save to the category-specific collection
+
+        # Optionally, if you want to reset params["collection_name"] to "chat_history" after the loop
         params = {
             "collection_name": "chat_history",
-            "data": [bot_message],
+            "data": [user_chat],
             "ids": [str(size + 1)],
-            "metadata": [{"id": size + 1}]
+            "metadata": [{
+                "id": size + 1,
+                "Character Response": bot_message,
+                "EmotionalResponse": self.thought["Emotion"],
+                "Inner_Thought": self.thought["Inner Thought"]
+            }]
         }
+
         self.storage.save_memory(params)
 
     def chatman(self, message):
@@ -149,29 +196,49 @@ class Chatbot:
                 result_dict[key] = value
         return result_dict
 
-    def memory_recall(self, category, message):
+    def memory_recall(self, categories, message, count=10):
         params = {
-            "collection_name": category,
+            "collection_name": categories,
             "query": message
         }
-        self.memories = self.storage.query_memory(params, 10)
+        new_memories = self.storage.query_memory(params, count)
+        if new_memories["documents"] != 'No Results!':
+            if new_memories is None:
+                new_memories = []
+            if not hasattr(self, 'memories') or self.memories is None:
+                self.memories = []
+            self.memories.extend([new_memories])
         return self.memories
 
-    def format_string(self, input_str):
-        # Check if the input string length is between 3 and 63 characters
-        if 3 <= len(input_str) <= 63:
-            # Check if the string starts and ends with an alphanumeric character
-            if input_str[0].isalnum() and input_str[-1].isalnum():
-                # Check if the string contains only alphanumeric characters, underscores, or hyphens
-                if re.match("^[a-zA-Z0-9_-]*$", input_str):
-                    # Check if the string contains no two consecutive periods
-                    if ".." not in input_str:
-                        # Check if the string is not a valid IPv4 address
-                        if not re.match(r'^\d+\.\d+\.\d+\.\d+$', input_str):
-                            return input_str  # String meets all criteria
+    @staticmethod
+    def format_string(input_str):
+        # Remove leading and trailing whitespace
+        input_str = input_str.strip()
 
-        return None  # String does not meet the criteria
+        # Replace non-alphanumeric, non-underscore, non-hyphen characters with underscores
+        input_str = re.sub("[^a-zA-Z0-9_-]", "_", input_str)
 
+        # Replace consecutive periods with a single period
+        while ".." in input_str:
+            input_str = input_str.replace("..", ".")
+
+        # Ensure it's not a valid IPv4 address
+        if re.match(r'^\d+\.\d+\.\d+\.\d+$', input_str):
+            input_str = "a" + input_str
+
+        # Ensure length is between 3 and 63 characters
+        while len(input_str) < 3:
+            input_str += input_str
+        if len(input_str) > 63:
+            input_str = input_str[:63]
+
+        # Ensure it starts and ends with an alphanumeric character
+        if not input_str[0].isalnum():
+            input_str = "a" + input_str[1:]
+        if not input_str[-1].isalnum():
+            input_str = input_str[:-1] + "a"
+
+        return input_str
 
 
 if __name__ == '__main__':

@@ -104,10 +104,10 @@ class Chatbot:
         self.reflection = self.parse_lines()
         print(f"self.thought: {self.reflection}")
 
-        if self.reflection["Choice"] == "Respond":
+        if self.reflection["Choice"] == "respond":
             self.save_memory(self.chat_response)
             return self.chat_response
-        elif self.reflection["Choice"] == "Nothing":
+        elif self.reflection["Choice"] == "nothing":
             return "No Response Provided"
         else:
             new_response = self.gen.run(user_message=message,

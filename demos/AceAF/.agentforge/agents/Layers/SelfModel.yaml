@@ -33,8 +33,10 @@ Prompts:
     {input_data}
 
   Chat: |+
-    Proposed user response:
+    <!important>
+    ProposedMessageToUser:
     {proposed_response}
+    </!important>
 
   ResponseFormat: |+
     {response_format}

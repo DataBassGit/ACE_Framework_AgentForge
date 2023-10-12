@@ -35,6 +35,9 @@ class L3Agent(AceLayer):
 
     def get_proposed_response(self):
         last_message = self.interface.get_chat_messages(1)
+        combined_message = self.top_layer_message + '\n' + self.bottom_layer_message
+        self.interface.save_chat_message(is_bus=1, message=combined_message, respondent='Agent')
+
         response = self.chat_bot.run(last_message)
 
         print(f"\nUnfiltered Response:\n{response}\n")

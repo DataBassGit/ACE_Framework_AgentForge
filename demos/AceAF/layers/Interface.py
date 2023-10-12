@@ -54,7 +54,7 @@ class Interface:
         history = self.storage.load_collection(params)
         return history
 
-    def save_chat_message(self, **kwargs):
+    def save_chat_message(self, is_bus=None, **kwargs):
         size = self.storage.count_collection("chat_history")
         message = f"{kwargs['respondent']}: {kwargs['message']}"
         params = {
@@ -64,7 +64,8 @@ class Interface:
             "metadata": [{"id": size + 1, "respondent": kwargs['respondent']}]
         }
         self.storage.save_memory(params)
-        self.output_message(0, message)
+        if is_bus is None:
+            self.output_message(0, message)
 
     def handle_south_bus(self, parsed_data):
         message = parsed_data['Southbound']['SayToUser']

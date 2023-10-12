@@ -10,6 +10,8 @@ Prompts:
     5. Cognitive Control: Manages action choices.
     6. Task Prosecution: Executes tasks, actions, and provides feedback.
 
+    Important: These layers are meant to act as a whole, not as individuals!
+
     Communication: Use the Southbound Bus for directives to the layer below, and the Northbound Bus to provide feedback to layers above.
 
     Instructions:
@@ -18,8 +20,8 @@ Prompts:
     
     Note: Communicating with the user may be considered an interaction.
 
-  Objectives: |+
-    Strategic objectives:
+  Directives: |+
+    Directives from above:
     {top_message}
 
   Capabilities: |+
@@ -48,5 +50,5 @@ Prompts:
       Actions: <Action sequence with dependencies>
       RiskMitigations: <Risk management strategies>
       SuccessCriteria: <Conditions for plan and action success>
-      OutputToUser: <Message for the user. If none, "None">
+      ProposedMessageToUser: <Message for the user. If none, "None">
     ```

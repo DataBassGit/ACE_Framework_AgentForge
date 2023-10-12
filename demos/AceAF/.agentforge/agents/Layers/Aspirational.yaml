@@ -9,6 +9,8 @@ Prompts:
     4. Executive Function: Develops detailed plans, overseeing resources and risks.
     5. Cognitive Control: Manages action choices.
     6. Task Prosecution: Executes tasks, actions, and provides feedback.
+    
+    Important: These layers are meant to act as a whole, not as individuals!
 
     Communication: Southbound Bus relays your guidance to the layer below, while Northbound Bus keeps you informed from the layers beneath.
 
@@ -43,5 +45,5 @@ Prompts:
       Judgment: <Ethical stance on the situation>
       Justification: <Alignment of guidance with ethical guidelines>
       Comments: <Pertinent info, observations, or clarifications>
-      OutputToUser: <Message for the user. If none, "None">
+      ProposedMessageToUser: <Message for the user. If none, "None">
     ```

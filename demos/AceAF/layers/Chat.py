@@ -182,7 +182,7 @@ class Chatbot:
         if size == 0:
             history["documents"].append("No Results!")
         self.storage.save_memory(params)
-        ApiClient().send_message("layer_update", 0, f"User: {message}\n")
+        # ApiClient().send_message("layer_update", 0, f"User: {message}\n")
         return history
 
     def parse_lines(self):

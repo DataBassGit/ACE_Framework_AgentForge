@@ -10,6 +10,8 @@ Prompts:
     5. Cognitive Control: Manages action decisions.
     6. Task Prosecution: Executes tasks, actions, and provides feedback.
 
+    Important: These layers are meant to act as a whole, not as individuals!
+
     Communication: Use the Southbound Bus for directives to the layer below, and the Northbound Bus to provide feedback to layers above.
 
     Instructions:
@@ -18,8 +20,8 @@ Prompts:
     3. Define guiding principles.
     4. Direct the Control Layer and summarize for the Aspirational Layer.
 
-  Mission: |+
-    Aspirational Mission:
+  Directives: |+
+    Directives from above:
     {top_message}
 
   Context: |+
@@ -40,5 +42,5 @@ Prompts:
       Strategies: <Detailed strategic approaches>
       Principles: <Guiding principles or constraints>
       Feedback: <Suggestions for the next layer below>
-      OutputToUser: <Message for the user. If none, "None">
+      ProposedMessageToUser: <Message for the user. If none, "None">
     ```

@@ -119,6 +119,12 @@ class AceLayer:
         # Meant for Individual Layers to override
         pass
 
+    @staticmethod
+    def get_layer_name_from_id(layer_id):
+        layer_id = int(layer_id)
+        layer_name = LAYER_REGISTRY[layer_id].layer_name
+        return layer_name
+
     def load_relevant_data(self):
         # Meant for Individual Layers to override
         pass
@@ -128,6 +134,16 @@ class AceLayer:
         params = {"collection_name": bus_name}
         self.bus[bus_name] = self.storage.load_collection(params)
 
+    @staticmethod
+    def format_message_for_display(layer_name, message):
+        # Removing the 'L#' from the Layer Name
+        clean_layer_name = layer_name[2:]
+
+        # Indenting the Attributes
+        indented_message = "\n".join(["\t\t" + line if line.strip() else line for line in message.split("\n")])
+
+        return f"\t{clean_layer_name}:\n{indented_message}"
+
     def process_data_from_buses(self):
         north_bus = self.bus.get("NorthBus", None)
         south_bus = self.bus.get("SouthBus", None)
@@ -135,15 +151,54 @@ class AceLayer:
         north_layer = self.north_layer.__str__()
         south_layer = self.south_layer.__str__()
 
-        # North Layer Writes to South Bus, Hence it's a Message from the Top Layer
-        if south_bus and north_layer in south_bus['ids']:
-            index = south_bus['ids'].index(north_layer)
-            self.top_layer_message = south_bus['documents'][index]
+        top_layer_messages = []
+        bottom_layer_messages = []
 
-        # North Layer Writes to South Bus, Hence it's a Message from the Bottom Layer
-        if north_bus and south_layer in north_bus['ids']:
-            index = north_bus['ids'].index(north_layer)
-            self.bottom_layer_message = north_bus['documents'][index]
+        # ------------- 1 Message -------------
+        # # North Layer Writes to South Bus, Hence it's a Message from the Top Layer
+        # if south_bus and north_layer in south_bus['ids']:
+        #     index = south_bus['ids'].index(north_layer)
+        #     self.top_layer_message = south_bus['documents'][index]
+        #
+        # # North Layer Writes to South Bus, Hence it's a Message from the Bottom Layer
+        # if north_bus and south_layer in north_bus['ids']:
+        #     index = north_bus['ids'].index(north_layer)
+        #     self.bottom_layer_message = north_bus['documents'][index]
+
+        # ------------- All Messages -------------
+        # North Layers Writes to South Bus, Hence it's a Message from the Top Layer(s)
+        if south_bus:
+            for layer_id, document in zip(south_bus['ids'], south_bus['documents']):
+                if int(layer_id) < self.layer_number:  # Assuming the layer IDs are numbers and lower means "above"
+                    top_layer_messages.append(document)
+
+        # South Layers Writes to North Bus, Hence it's a Message from the Bottom Layer(s)
+        if north_bus:
+            for layer_id, document in zip(north_bus['ids'], north_bus['documents']):
+                if int(layer_id) > self.layer_number:  # Assuming the layer IDs are numbers and higher means "below"
+                    bottom_layer_messages.append(document)
+
+        formatted_top_message = []
+        for message in top_layer_messages:
+            layer_id = south_bus['ids'][top_layer_messages.index(message)]
+            layer_name = self.get_layer_name_from_id(layer_id)
+            formatted_top_message.append(self.format_message_for_display(layer_name, message))
+
+        # Combine them into a single string
+        self.top_layer_message = "\n".join(formatted_top_message)
+        print(f"SOUTH BUS (Top Messages):\n{self.top_layer_message}")
+
+        formatted_bottom_message = []
+        for message in bottom_layer_messages:
+            layer_id = north_bus['ids'][bottom_layer_messages.index(message)]
+            layer_name = self.get_layer_name_from_id(layer_id)
+            formatted_bottom_message.append(self.format_message_for_display(layer_name, message))
+
+        # Combine them into a single string
+        self.bottom_layer_message = "\n".join(formatted_bottom_message)
+        print(f"NORTH BUS (Bottom Messages):\n{self.bottom_layer_message}")
+
+        # ---------- NEW CODE ----------
 
     def run_agents(self):
         # Call individual Agents From Each Layer
@@ -165,8 +220,8 @@ class AceLayer:
         if self.parsed_result['Southbound']:
             self.my_messages['SouthBus'] = pretty_print_yaml(self.parsed_result['Southbound'])
 
-        print(f"\nNorthBus:\n{self.my_messages['NorthBus']}\n")
-        print(f"\nSouthBus:\n{self.my_messages['SouthBus']}\n")
+        # print(f"\nNorthBus:\n{self.my_messages['NorthBus']}\n")
+        # print(f"\nSouthBus:\n{self.my_messages['SouthBus']}\n")
 
     def update_bus(self, **kwargs):
 

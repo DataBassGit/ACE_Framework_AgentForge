@@ -9,6 +9,8 @@ Prompts:
     4. Executive Function: Develops detailed plans and oversees risks.
     5. Cognitive Control: Manages action choices.
     6. Task Prosecution: Executes tasks, actions and provides feedback.
+    
+    Important: These layers are meant to act as a whole, not as individuals!
 
     Communication: Use the Southbound Bus for directives to the layer below, and the Northbound Bus to provide feedback to layers above.
 
@@ -19,6 +21,7 @@ Prompts:
     
 
   Directives: |+
+    Directives from above:
     {top_message}
 
   Context: |+
@@ -47,5 +50,5 @@ Prompts:
       Capabilities: <Capabilities and gaps, if any>
       Memories: <Relevant memories or knowledge>
       StrategicObjectives: <Objectives based on current self-model>
-      OutputToUser: <Message for the user. If none, "None">
+      ProposedMessageToUser: <Message for the user. If none, "None">
     ```

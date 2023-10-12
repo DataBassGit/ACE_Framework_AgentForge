@@ -37,8 +37,8 @@ Situation: |-
 
 ResponseFormat: |-
   IMPORTANT:
-  - Stick strictly to the provided YAML format.
-  - Enclose YAML strings in single quotes (`'`). Escape single quotes within strings (e.g., `I'm` -> `I''m`).
+  - Stick strictly to the provided YAML format, if uncertain fill the format with "None" values.
+  - Enclose YAML strings in double quotes (`"`). <!important>
   - Keep responses concise and short.
   - Use exact attribute names from the YAML format.
   - All attributes are mandatory. If irrelevant, use `'None'`.
